@@ -1,26 +1,175 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: #efeeeb;
+  --color-ink: #0a0a0a;
+  --color-accent: #d12424;
+  --color-muted: #6b6862;
+  --color-soft: #ccc9c4;
+  --font-sans: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-space-grotesk), "Helvetica Neue", Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@utility text-display {
+  font-size: clamp(3rem, 11vw, 11rem);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+}
+@utility text-hero {
+  font-size: clamp(2.5rem, 15vw, 13rem);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  /* Leave room for the stats column beside the name */
+  @media (width >= 80rem) {
+    font-size: min(12vw, 13rem);
   }
+}
+@utility text-section {
+  font-size: clamp(2.25rem, 5.5vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+@utility text-project {
+  font-size: clamp(1.625rem, 4.167vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+@utility text-label {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-canvas);
+}
+
+/* While the intro loader covers the page: no scrolling, hero letters wait */
+html[data-loading] {
+  overflow: hidden;
+}
+html[data-loading] .rise {
+  animation-play-state: paused;
+}
+
+/* Hero letters rise in, staggered via --i */
+.rise {
+  display: inline-block;
+  animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 45ms + 150ms);
+}
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+}
+
+/* Scroll reveal: only hide content when JS can reveal it again */
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  [data-reveal="in"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Hero cursor-trail stickers: pop in, hold, shrink away */
+.trail-pop {
+  translate: -50% -50%;
+  animation: trail-pop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.trail-pop > svg {
+  width: 100%;
+  height: 100%;
+}
+@keyframes trail-pop {
+  0% {
+    transform: rotate(var(--rot)) scale(0.2);
+    opacity: 0;
+  }
+  15% {
+    transform: rotate(var(--rot)) scale(1.12);
+    opacity: 1;
+  }
+  25% {
+    transform: rotate(var(--rot)) scale(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--rot)) scale(0.5) translateY(-12px);
+    opacity: 0;
+  }
+}
+
+/* Project details panel */
+.panel-in {
+  animation: panel-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.panel-out {
+  animation: panel-out 0.28s ease-in both;
+}
+@keyframes panel-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes panel-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.marquee {
+  animation: marquee 40s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .rise,
+  .marquee,
+  .trail-pop,
+  .panel-in,
+  .panel-out {
+    animation: none;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
